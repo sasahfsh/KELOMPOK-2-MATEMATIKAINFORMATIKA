@@ -26,7 +26,11 @@ max_iter = 100
 nama_gedung = list(gedung.keys())
 data = list(gedung.values())
 
-centroids = random.sample(data, K)
+centroids = [
+    gedung["FPTI A"],
+    gedung["FPMIPA C"],
+    gedung ["FIP Lama"]
+]
 
 def euclidean_distance(a, b):
 
@@ -39,6 +43,9 @@ def euclidean_distance(a, b):
 
 
 for iteration in range(max_iter):
+
+    print(f"\n===== ITERASI {iteration + 1} =====")
+
     clusters = [[] for _ in range(K)]
 
     # clustering
@@ -53,6 +60,13 @@ for iteration in range(max_iter):
         cluster_index = distances.index(min(distances))
         clusters[cluster_index].append(idx)
 
+    print("Cluster sementara:")
+
+    for i, cluster in enumerate(clusters):
+        print(f"Cluster {i+1}:")
+        for idx in cluster:
+            print(" ", nama_gedung[idx])
+
     # centroid baru
     new_centroids = []
 
@@ -65,8 +79,12 @@ for iteration in range(max_iter):
 
         new_centroids.append(centroid)
 
-    # stop jika sama
+    print("\nCentroid baru:")
+    for i, centroid in enumerate(new_centroids):
+        print(f"Cluster {i+1}: {centroid}")
+
     if new_centroids == centroids:
+        print("\nKonvergen! Proses berhenti.")
         break
 
     centroids = new_centroids
@@ -84,3 +102,90 @@ print("\nCENTROID AKHIR")
 
 for i, centroid in enumerate(centroids):
     print(f"Cluster {i+1}: {centroid}")
+
+wcss = 0
+
+for i, cluster in enumerate(clusters):
+
+    centroid = centroids[i]
+
+    for idx in cluster:
+
+        distance = euclidean_distance(data[idx], centroid)
+        wcss += distance ** 2
+
+print("WCSS =", round(wcss, 4))
+
+#silhouette score
+
+labels = [0] * len(data)
+
+for cluster_id, cluster in enumerate(clusters):
+    for idx in cluster:
+        labels[idx] = cluster_id
+
+silhouette_scores = []
+
+for i in range(len(data)):
+
+    current_cluster = labels[i]
+
+    # a(i) = rata-rata jarak ke anggota cluster yang sama
+    same_cluster = [
+        idx for idx in clusters[current_cluster]
+        if idx != i
+    ]
+
+    if len(same_cluster) == 0:
+        a = 0
+    else:
+        a = sum(
+            euclidean_distance(data[i], data[idx])
+            for idx in same_cluster
+        ) / len(same_cluster)
+
+    # b(i) = rata-rata jarak ke cluster lain terdekat
+    b = float('inf')
+
+    for other_cluster in range(K):
+
+        if other_cluster == current_cluster:
+            continue
+
+        distances = [
+            euclidean_distance(data[i], data[idx])
+            for idx in clusters[other_cluster]
+        ]
+
+        avg_distance = sum(distances) / len(distances)
+
+        if avg_distance < b:
+            b = avg_distance
+
+    # jika cluster hanya berisi 1 anggota
+    if max(a, b) == 0:
+        s = 0
+    else:
+        s = (b - a) / max(a, b)
+
+    silhouette_scores.append(s)
+
+# silhouette keseluruhan
+silhouette = sum(silhouette_scores) / len(silhouette_scores)
+
+print("\nSILHOUETTE SCORE")
+print("Nilai keseluruhan =", round(silhouette, 4))
+
+# silhouette per cluster
+print("\nSILHOUETTE PER CLUSTER")
+
+for cluster_id, cluster in enumerate(clusters):
+
+    total = 0
+
+    for idx in cluster:
+        total += silhouette_scores[idx]
+
+    cluster_score = total / len(cluster)
+
+    print(f"Cluster {cluster_id + 1}: {cluster_score:.4f}")
