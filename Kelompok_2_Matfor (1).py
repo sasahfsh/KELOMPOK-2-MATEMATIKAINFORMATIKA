@@ -1,22 +1,21 @@
 import math
-import random
 
 gedung = {
-    "FPMIPA A": [4.4, 3.9, 4.3],
+    "FPMIPA A": [4.4, 4.1, 4.4],
     "FPMIPA B": [4.4, 3.8, 3.9],
-    "FPMIPA C": [4.1, 3.6, 3.5],
-    "FPTI A": [4.0, 4.0, 4.5],
+    "FPMIPA C": [4.1, 3.7, 3.6],
+    "FPTI A": [4, 4, 4.3],
     "FPTI B": [3.3, 3.6, 3.6],
     "FPTI C": [3.3, 3.8, 3.5],
-    "FPTI D": [5.0, 5.0, 5.0],
-    "FIP Lama": [3.8, 2.8, 3.0],
-    "FIP Baru": [4.0, 4.0, 3.8],
-    "FPBS A": [4.2, 3.4, 3.6],
-    "FPBS B": [4.0, 3.6, 3.6],
-    "FPOK A": [3.7, 3.6, 3.5],
-    "Kolam Renang": [3.0, 3.6, 3.2],
-    "Gymnasium": [3.2, 3.4, 3.2],
-    "Sports Hall": [3.4, 3.4, 3.6]
+    "FPTI D": [5, 5, 5],
+    "FIP Lama": [3.8, 2.8, 3],
+    "FIP Baru": [4.0, 4.1, 4],
+    "FPBS A": [4.2, 3.5, 3.5],
+    "FPBS B": [4, 3.5, 3.6],
+    "FPOK A": [3.8, 3.7, 3.5],
+    "Kolam Renang": [3, 3.5, 3.2],
+    "Gymnasium": [3.5, 3.7, 3.5],
+    "Sports Hall": [3.6, 3.6, 3.7]
 }
 
 K = 3
@@ -29,7 +28,7 @@ data = list(gedung.values())
 centroids = [
     gedung["FPTI A"],
     gedung["FPMIPA C"],
-    gedung ["FIP Lama"]
+    gedung ["Kolam Renang"]
 ]
 
 def euclidean_distance(a, b):
@@ -115,8 +114,6 @@ for i, cluster in enumerate(clusters):
         wcss += distance ** 2
 
 print("WCSS =", round(wcss, 4))
-
-#silhouette score
 
 labels = [0] * len(data)
 
